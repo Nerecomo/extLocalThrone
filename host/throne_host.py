@@ -22,7 +22,7 @@ import throne_api  # noqa: E402
 import throne_db  # noqa: E402
 import throne_proc  # noqa: E402
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(os.environ.get("LOCALAPPDATA", HERE), "ThroneSiteAdder")
 MAX_IMPORT = 5000

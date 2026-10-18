@@ -1,8 +1,8 @@
-# Throne Site Adder — host
+# Throne Site Adder — расширение и host
 
-Локальное приложение-помощник (native messaging host) для браузерного расширения
-**«Добавить сайт в Throne»** ([Chrome Web Store](https://chromewebstore.google.com/detail/lnfbcmcfedcjfkgomfmepbcnglmhnmho)).
-Расширение передаёт ему домен открытой вкладки, а host:
+Браузерное расширение **«Добавить сайт в Throne»** ([Chrome Web Store](https://chromewebstore.google.com/detail/lnfbcmcfedcjfkgomfmepbcnglmhnmho),
+а также папка [`extension/`](extension/) для установки без магазина) и локальное приложение-помощник для него
+(native messaging host). Расширение передаёт host домен открытой вкладки, а host:
 
 1. записывает домен **в конец** списка `domain_suffix` правила `proxy` в **активном** профиле маршрутизации
    [Throne](https://github.com/throneproj/Throne) (если такого правила нет, создаёт его; дубликаты не добавляет);
@@ -16,7 +16,7 @@
 * Windows 10/11.
 * [Throne](https://github.com/throneproj/Throne/releases) **1.4.0-beta.2 или новее**, в котором включён Throne API: **Настройки → Integration Settings → Throne API → Enable**. Ключ API host берёт сам из конфига Throne, копировать его не нужно.
 * [Python](https://www.python.org/downloads/) **3.8 или новее**. Сторонние пакеты не нужны: достаточно стандартной библиотеки.
-* Расширение «Добавить сайт в Throne» в Chrome, Yandex Browser или Edge (ID `lnfbcmcfedcjfkgomfmepbcnglmhnmho`).
+* Расширение «Добавить сайт в Throne» в Chrome, Yandex Browser или Edge (ID `lnfbcmcfedcjfkgomfmepbcnglmhnmho`): из Chrome Web Store или [локально](#расширение-без-магазина).
 
 ## Установка
 
@@ -40,6 +40,22 @@
 | `-RestartMethod api\|kill\|none` | Как применять изменения. `api` — по умолчанию. `kill` — для Throne без API: завершает ядро, как пункт трея «Restart Proxy», и в режиме TUN это может вызвать ошибку адаптера. `none` — только сохранять изменения |
 
 > Запускайте установщик из обычного окна PowerShell или Проводника. Приложения в формате MSIX, например Claude Desktop, Windows изолирует: их запись в `%LOCALAPPDATA%` попадает в виртуальную копию, которую браузер не видит.
+
+## Расширение без магазина
+
+Если расширение ещё не опубликовано в Chrome Web Store или магазин недоступен, его можно поставить из этого репозитория. В manifest вписан публичный ключ элемента магазина, поэтому у локальной копии **тот же ID** (`lnfbcmcfedcjfkgomfmepbcnglmhnmho`), и host её принимает без дополнительной настройки.
+
+1. Скачайте `ThroneSiteAdder-extension-vX.Y.Z.zip` со страницы [**Releases**](https://github.com/Nerecomo/extLocalThrone/releases/latest) или возьмите папку [`extension/`](extension/) из репозитория.
+2. Распакуйте архив в **постоянное** место, например `%LOCALAPPDATA%\ThroneSiteAdder\extension`: браузер загружает расширение прямо из этой папки, удалять её нельзя.
+3. Откройте страницу расширений: `browser://extensions` в Yandex, `chrome://extensions` в Chrome, `edge://extensions` в Edge.
+4. Включите **режим разработчика**, нажмите **«Загрузить распакованное расширение»** и выберите папку, в которой лежит `manifest.json`.
+5. Установите host, если ещё не установили (см. выше), и закрепите иконку расширения на панели.
+
+Ограничения локальной установки:
+
+* Браузер может отключать расширения в режиме разработчика при запуске и показывать предупреждение. Тогда снова включите его на странице расширений.
+* Само расширение не обновляется: новую версию нужно скачать и заменить файлы в той же папке, а затем нажать ↻ на карточке расширения.
+* Когда расширение появится в Chrome Web Store, удалите локальную копию и установите его из магазина: два расширения с одним ID одновременно стоять не могут. Host переустанавливать не нужно.
 
 ## Удаление
 
@@ -93,7 +109,14 @@ python -m unittest discover -s tests -v
 powershell -ExecutionPolicy Bypass -File make-release.ps1
 ```
 
-Скрипт создаёт `release\ThroneSiteAdder-host-v<версия>.zip` и `.sha256`; версия берётся из `VERSION` в `host/throne_host.py`. На GitHub релиз собирается автоматически, когда вы пушите тег `v<версия>`: см. `.github/workflows/release.yml`.
+Скрипт создаёт в `release\` два архива, каждый с `.sha256`:
+
+* `ThroneSiteAdder-host-v<версия>.zip` — версия берётся из `VERSION` в `host/throne_host.py`;
+* `ThroneSiteAdder-extension-v<версия>.zip` — версия берётся из `extension/manifest.json`.
+
+На GitHub релиз собирается автоматически, когда вы пушите тег `v<версия host>`: см. `.github/workflows/release.yml`.
+
+Папка `extension/` — готовая сборка, её не правят вручную. Исходники расширения и сборщик (`node tools/build.mjs`) лежат в основном проекте; при сборке он обновляет эту папку.
 
 ## Лицензия
 

@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Добавить сайт в Throne",
+  "short_name": "Throne: сайт",
+  "version": "1.0.1",
+  "description": "Добавляет домен открытой вкладки в список прокси активного профиля маршрутизации Throne.",
+  "permissions": [
+    "activeTab",
+    "nativeMessaging"
+  ],
+  "action": {
+    "default_title": "Добавить сайт в Throne",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "minimum_chrome_version": "111",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlSS/NLYm6gbEzfrwveYaXo85iHn0CavvkYVWV6UXNXEA9caQTAsl0bMzBxx8U8L9kIjIZ007OITpZKn1YOm1Ort0TkGkHTlKuhr+oqsAzmqMM1Cshj+0nmJJKT3FYbZqmFPq7cG08j2Qu3O/yE83ve/tmU6ZZ0624UPhOipVBy95WHoKTo957u6GgIAnKrNZqzf8Wk9sp75Fnj2+VWdDF4/TGvKgBmLG3EQpKBq7drm8tNPIuVAAQsl8uEdA4AzY8aeJb7utFmOA6W8YnqUZthi1KwgmkRRaFYtnl5dz79/OA6II5x+1AGC7lD5+WdRl0N/thm70hhq7dQtS3MTwdQIDAQAB"
+}

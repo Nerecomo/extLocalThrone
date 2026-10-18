@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Добавить сайт в Throne</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <header class="top">
+      <div class="brand">
+        <img class="brand-icon" src="icons/icon-16.svg" alt="" width="16" height="16">
+        <span>Добавить сайт в Throne</span>
+      </div>
+      <div id="profile" hidden>Профиль: <b id="profile-name"></b></div>
+    </header>
+
+    <main id="main">
+      <div class="section-label">ДОМЕНЫ</div>
+      <section class="panel">
+        <form id="add-form" class="add-row" novalidate>
+          <input id="domain-input" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="example.com или 192.168.0.0/16" aria-label="Домен или подсеть">
+          <button id="add-btn" class="btn" type="submit">Добавить</button>
+        </form>
+
+        <div id="status" role="status" aria-live="polite" hidden>
+          <span class="status-icon" aria-hidden="true"></span>
+          <div>
+            <div class="status-text"></div>
+            <div class="status-detail"></div>
+          </div>
+        </div>
+
+        <ul id="list" class="list"></ul>
+        <p id="empty" hidden>Список пуст</p>
+
+        <div class="footer-row">
+          <button id="export-btn" class="btn btn-wide" type="button">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+            Экспорт
+          </button>
+          <button id="import-btn" class="btn btn-wide" type="button">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M7 9l5-5 5 5M5 20h14"/></svg>
+            Импорт
+          </button>
+          <input type="file" id="import-file" accept=".txt,.json,text/plain,application/json" hidden>
+        </div>
+      </section>
+      <p id="hint">Поддерживаются wildcard *.example.com и подсети 10.0.0.0/8, 2001:db8::/32</p>
+    </main>
+
+    <section id="no-host" class="panel panel--nohost" hidden>
+      <h1 class="nohost-title">Не найдено host-приложение</h1>
+      <p class="nohost-text">Расширению нужен локальный помощник, через который оно меняет список маршрутизации Throne. Установите его один раз:</p>
+      <ol class="steps">
+        <li>Скачайте архив <b>ThroneSiteAdder-host</b> со страницы
+          <a id="releases-link" href="https://github.com/Nerecomo/extLocalThrone/releases/latest" target="_blank" rel="noopener noreferrer">Releases на GitHub</a>
+          и распакуйте.</li>
+        <li>Запустите в ней <b>install.cmd</b> (двойной клик) или выполните в PowerShell:
+          <div class="cmd">
+            <code id="install-cmd">powershell -ExecutionPolicy Bypass -File install.ps1 -ExtensionId <span id="ext-id"></span></code>
+            <button id="copy-cmd" class="btn btn-icon" type="button" title="Скопировать команду" aria-label="Скопировать команду">
+              <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+          </div>
+        </li>
+        <li>Перезапустите браузер.</li>
+      </ol>
+      <button id="retry-btn" class="btn btn-wide" type="button">Проверить снова</button>
+    </section>
+  </div>
+
+  <template id="item-template">
+    <li class="item"><span class="item-name"></span><button class="item-remove" type="button" title="Удалить"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>Удалить</button></li>
+  </template>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
