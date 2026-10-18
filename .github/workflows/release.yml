@@ -1,0 +1,57 @@
+name: tests and release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Installer scripts parse
+        shell: powershell
+        run: |
+          foreach ($f in 'install.ps1', 'uninstall.ps1', 'make-release.ps1') {
+            $errors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $f), [ref]$null, [ref]$errors)
+            if ($errors.Count) { $errors; exit 1 }
+          }
+
+      - name: Build release archive
+        shell: powershell
+        run: ./make-release.ps1
+
+      - name: Check tag matches VERSION
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          test -f "release/ThroneSiteAdder-host-${GITHUB_REF_NAME}.zip" || {
+            echo "Tag ${GITHUB_REF_NAME} does not match VERSION in host/throne_host.py"; exit 1; }
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" release/*.zip release/*.sha256 \
+            --title "Throne Site Adder host $GITHUB_REF_NAME" --notes-file CHANGELOG.md
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release
+          path: release/

@@ -20,7 +20,7 @@
 
 ## Установка
 
-1. Скачайте `ThroneSiteAdder-host-vX.Y.Z.zip` со страницы **Releases** и распакуйте в любую папку.
+1. Скачайте `ThroneSiteAdder-host-vX.Y.Z.zip` со страницы [**Releases**](https://github.com/Nerecomo/extLocalThrone/releases/latest) и распакуйте в любую папку.
 2. Запустите двойным кликом **`install.cmd`**. Права администратора не нужны.
 3. Перезапустите браузер.
 

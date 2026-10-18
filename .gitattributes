@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# Windows scripts are kept byte for byte: cmd.exe needs CRLF, Windows PowerShell 5.1 needs the UTF-8 BOM.
+*.cmd -text
+*.ps1 -text
