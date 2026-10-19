@@ -1,9 +1,12 @@
 name: tests and release
 
+# Pushes and pull requests run the tests.
+# A tag host-v<version> publishes the host release, extension-v<version> the extension release.
+# Each release carries only its own archive and only the changelog section of that version.
 on:
   push:
     branches: [main]
-    tags: ['v*']
+    tags: ['host-v*', 'extension-v*']
   pull_request:
 
 permissions:
@@ -31,27 +34,41 @@ jobs:
             if ($errors.Count) { $errors; exit 1 }
           }
 
-      - name: Build release archive
+      - name: Build both archives (check)
+        if: "!startsWith(github.ref, 'refs/tags/')"
         shell: powershell
-        run: ./make-release.ps1
+        run: |
+          ./make-release.ps1 host
+          ./make-release.ps1 extension
 
-      - name: Check tag matches VERSION
-        if: startsWith(github.ref, 'refs/tags/v')
+      - name: Build the tagged release
+        if: startsWith(github.ref, 'refs/tags/')
+        id: build
         shell: bash
         run: |
-          test -f "release/ThroneSiteAdder-host-${GITHUB_REF_NAME}.zip" || {
-            echo "Tag ${GITHUB_REF_NAME} does not match VERSION in host/throne_host.py"; exit 1; }
+          tag="$GITHUB_REF_NAME"
+          component="${tag%%-v*}"          # host | extension
+          version="${tag#*-v}"
+          powershell -NoProfile -ExecutionPolicy Bypass -File make-release.ps1 "$component"
+          built="$(cat release/version.txt)"
+          if [ "$built" != "$version" ]; then
+            echo "Tag $tag does not match the $component version $built"; exit 1
+          fi
+          if [ "$component" = host ]; then
+            title="Host $version"; latest=true
+          else
+            title="Расширение $version"; latest=false
+          fi
+          echo "title=$title" >> "$GITHUB_OUTPUT"
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
 
       - name: Publish GitHub release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Host releases stay "Latest", so releases/latest always leads to the host.
           gh release create "$GITHUB_REF_NAME" release/*.zip release/*.sha256 \
-            --title "Throne Site Adder host $GITHUB_REF_NAME" --notes-file CHANGELOG.md
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release
-          path: release/
+            --title "${{ steps.build.outputs.title }}" --notes-file release/notes.md \
+            --latest=${{ steps.build.outputs.latest }}

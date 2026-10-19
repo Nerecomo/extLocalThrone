@@ -20,7 +20,7 @@
 
 ## Установка
 
-1. Скачайте `ThroneSiteAdder-host-vX.Y.Z.zip` со страницы [**Releases**](https://github.com/Nerecomo/extLocalThrone/releases/latest) и распакуйте в любую папку.
+1. Скачайте архив `ThroneSiteAdder-host-v<версия>.zip` из последнего релиза host ([**Releases → Latest**](https://github.com/Nerecomo/extLocalThrone/releases/latest)) и распакуйте в любую папку.
 2. Запустите двойным кликом **`install.cmd`**. Права администратора не нужны.
 3. Перезапустите браузер.
 
@@ -45,7 +45,7 @@
 
 Если расширение ещё не опубликовано в Chrome Web Store или магазин недоступен, его можно поставить из этого репозитория. В manifest вписан публичный ключ элемента магазина, поэтому у локальной копии **тот же ID** (`lnfbcmcfedcjfkgomfmepbcnglmhnmho`), и host её принимает без дополнительной настройки.
 
-1. Скачайте `ThroneSiteAdder-extension-vX.Y.Z.zip` со страницы [**Releases**](https://github.com/Nerecomo/extLocalThrone/releases/latest) или возьмите папку [`extension/`](extension/) из репозитория.
+1. Скачайте `ThroneSiteAdder-extension-v<версия>.zip` из релиза «Расширение …» на странице [**Releases**](https://github.com/Nerecomo/extLocalThrone/releases) или возьмите папку [`extension/`](extension/) из репозитория.
 2. Распакуйте архив в **постоянное** место, например `%LOCALAPPDATA%\ThroneSiteAdder\extension`: браузер загружает расширение прямо из этой папки, удалять её нельзя.
 3. Откройте страницу расширений: `browser://extensions` в Yandex, `chrome://extensions` в Chrome, `edge://extensions` в Edge.
 4. Включите **режим разработчика**, нажмите **«Загрузить распакованное расширение»** и выберите папку, в которой лежит `manifest.json`.
@@ -103,18 +103,27 @@ python -m unittest discover -s tests -v
 * протокол native messaging;
 * клиент Throne API: векторы RFC 8439, официальные векторы `throne-api/1` и сквозные тесты с поддельным сервером.
 
-Релиз собирается так:
+### Релизы
+
+Host и расширение выпускаются **отдельными релизами** со своими версиями и тегами:
+
+| Компонент | Тег | Версия берётся из | Изменения | Архив |
+|---|---|---|---|---|
+| host | `host-v1.0.2` | `VERSION` в `host/throne_host.py` | `CHANGELOG.md` | `ThroneSiteAdder-host-v1.0.2.zip` |
+| расширение | `extension-v1.0.1` | `version` в `extension/manifest.json` | `CHANGELOG-extension.md` | `ThroneSiteAdder-extension-v1.0.1.zip` |
+
+Чтобы выпустить новую версию:
+1. Поднимите версию компонента.
+2. Добавьте в начало его CHANGELOG раздел `## <версия>`.
+3. Закоммитьте и запушьте тег, например `git tag -a host-v1.0.3 -m "Host 1.0.3"` и `git push origin host-v1.0.3`.
+
+GitHub Actions (`.github/workflows/release.yml`) прогонит тесты и опубликует релиз только с архивом этого компонента. В описание релиза попадёт только раздел этой версии. Если тег не совпадает с версией в коде, релиз не выпускается. Релиз host помечается как «Latest», релиз расширения — нет, поэтому ссылка `releases/latest` всегда ведёт на host.
+
+Локально тот же архив и заметки (`release\notes.md`) собираются так:
 
 ```bash
-powershell -ExecutionPolicy Bypass -File make-release.ps1
+powershell -ExecutionPolicy Bypass -File make-release.ps1 host
 ```
-
-Скрипт создаёт в `release\` два архива, каждый с `.sha256`:
-
-* `ThroneSiteAdder-host-v<версия>.zip` — версия берётся из `VERSION` в `host/throne_host.py`;
-* `ThroneSiteAdder-extension-v<версия>.zip` — версия берётся из `extension/manifest.json`.
-
-На GitHub релиз собирается автоматически, когда вы пушите тег `v<версия host>`: см. `.github/workflows/release.yml`.
 
 Папка `extension/` — готовая сборка, её не правят вручную. Исходники расширения и сборщик (`node tools/build.mjs`) лежат в основном проекте; при сборке он обновляет эту папку.
 
